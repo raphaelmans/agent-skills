@@ -1,150 +1,117 @@
 ---
 name: agent-context
-description: Log progress and update agent context files in agent-contexts directory using versioned naming convention (00-00-short-desc.md)
+description: Log progress and create or update agent context notes in `agent-contexts/` using versioned filenames (`00-00-short-desc.md`), Obsidian frontmatter, session-scoped tags (`frontend/<feature-module>`, `backend/<route-service>`), and up to 2 semantically related prior-context links. Use when asked to log progress, capture context, document work done, or update `agent-contexts` files.
 ---
 
 # Agent Context Logging
 
 Use this skill when the user asks to:
-- "Log progress" or "capture progress"
-- "Update agent contexts"
-- "Save our work" or "document what we did"
-- Any request mentioning `agent-contexts`
+- Log or capture progress
+- Save or document completed work
+- Create/update `agent-contexts` notes
 
-## Convention
+## File Convention
 
-### File Naming
+### Naming
 
-Files follow the pattern: `MM-NN-short-desc.md`
+Use: `MM-NN-short-desc.md`
 
-| Part | Description |
-|------|-------------|
-| `MM` | Major version (feature/milestone) |
-| `NN` | Minor version (increment within major) |
-| `short-desc` | Kebab-case description (2-4 words) |
-
-**Examples:**
-- `00-00-initial-setup.md`
-- `00-01-auth-implementation.md`
-- `01-00-api-refactor.md`
-- `01-01-fix-middleware.md`
+- `MM`: major milestone
+- `NN`: minor increment
+- `short-desc`: kebab-case summary (2-4 words)
 
 ### Versioning Rules
 
-1. **Always append** - Never overwrite existing files
-2. **Increment minor** (`NN`) for updates within same feature
-3. **Increment major** (`MM`) for new features/milestones
-4. **User can specify** - If user says "02-*", start from `02-00`
+1. Always append; never overwrite
+2. Increment `NN` for same milestone updates
+3. Increment `MM` for a new milestone
+4. If user specifies `MM-*`, start at `MM-00`
 
-### Directory Location
+### Location
 
-Agent contexts live in the project's `agent-contexts/` directory:
+Store notes in: `<project-root>/agent-contexts/`
 
-```
-<project-root>/
-└── agent-contexts/
-    ├── 00-00-initial-setup.md
-    ├── 00-01-auth-implementation.md
-    └── 01-00-new-feature.md
-```
+## Obsidian Metadata
 
-## File Format
+Every note must start with YAML frontmatter containing:
+- `tags`
+- `date`
+- `previous`
+- `related_contexts`
 
-```markdown
-# [MM-NN] Short Title
+## Tag Taxonomy (Session-Scoped)
 
-> Date: YYYY-MM-DD
-> Previous: MM-NN-prev-file.md (if applicable)
+Always include:
+- `agent-context`
 
-## Summary
+Derive additional tags from files changed in the current chat session only.
 
-1-3 sentence overview of what was accomplished.
+Allowed tags:
+- `frontend/<feature-module>`
+- `backend/<route-service>`
 
-## Changes Made
+Do not add global tags such as `area/*`, `topic/*`, or `stack/*`.
 
-### Category 1 (e.g., Implementation)
+### Derivation Rules
 
-| File | Change |
-|------|--------|
-| `path/to/file.ts` | Description of change |
+Use only changed files listed in the current note's `Changes Made` section.
 
-### Category 2 (e.g., Documentation)
+Frontend mapping:
+1. `client/src/features/<feature>/...` -> `frontend/<feature>`
+2. `client/src/modules/<module>/...` -> `frontend/<module>`
+3. `client/src/app/...` or `client/app/...` -> `frontend/<first-route-segment>`
 
-| File | Change |
-|------|--------|
-| `path/to/doc.md` | Description of change |
+Backend mapping:
+1. `server/src/app/api/<route...>/route.ts` -> `backend/<route...>`
+2. `server/src/lib/modules/<module>/services/<service>.ts` -> `backend/<module>/<service>`
+3. `server/src/lib/modules/<module>/...` -> `backend/<module>`
 
-## Key Decisions
+If both sides changed, include both tag types.
+If only one side changed, include one tag type.
+If neither changed, keep only `agent-context`.
 
-- Decision 1 and why
-- Decision 2 and why
+## Related Context Rule
 
-## Next Steps (if applicable)
+Reference up to 2 prior context files that are semantically relevant.
 
-- [ ] Pending task 1
-- [ ] Pending task 2
+Selection order:
+1. Highest overlap in changed paths and domain keywords
+2. If no semantic overlap, use the 2 most recent notes
+3. If fewer than 2 exist, include only available notes
 
-## Commands to Continue
+Write references in:
+- Frontmatter: `related_contexts`
+- Body: `## Related Contexts`
 
-```bash
-# Any useful commands for next session
-```
-```
+## Template
 
-## Step-by-Step
+Use: `references/file-template.md`
 
-### 1. Determine Version Number
+## Workflow
 
-Check existing files:
-
+1. Determine next version:
 ```bash
 ls <project>/agent-contexts/
 ```
-
-- If empty or user starts fresh: use `00-00`
-- If user specifies `MM-*`: use `MM-00`
-- Otherwise: increment the latest minor version
-
-### 2. Create the File
-
+2. Create note file:
 ```bash
-# Create directory if needed
 mkdir -p <project>/agent-contexts
-
-# Create the file
 touch <project>/agent-contexts/MM-NN-short-desc.md
 ```
-
-### 3. Write Content
-
-Include:
-- Summary of work done
-- Files changed (with paths)
-- Key decisions made
-- Next steps if applicable
-
-### 4. Verify
-
+3. Fill template:
+- Add summary, changes, decisions, next steps
+- Derive tags from this session's changed files only
+- Add up to 2 related context links
+4. Verify output:
 ```bash
 ls -la <project>/agent-contexts/
 ```
 
-## Example
-
-If the latest file is `00-01-auth-implementation.md` and user says "log progress":
-
-Create: `00-02-convention-fixes.md`
-
-If user says "start 01-* for the new feature":
-
-Create: `01-00-new-feature-name.md`
-
 ## Checklist
 
-- [ ] Check existing files in `agent-contexts/`
-- [ ] Determine correct version number (append, don't overwrite)
-- [ ] Use kebab-case for short description
-- [ ] Include date and previous file reference
-- [ ] List all changed files with descriptions
-- [ ] Document key decisions
-- [ ] Add next steps if work is ongoing
+- [ ] Filename follows `MM-NN-short-desc.md`
+- [ ] Frontmatter has `tags`, `date`, `previous`, `related_contexts`
+- [ ] Tags follow `frontend/*` and/or `backend/*` from changed files only
+- [ ] No unrelated global taxonomy tags
+- [ ] Up to 2 semantically relevant related context links included
+- [ ] Summary, changes, decisions, next steps completed
