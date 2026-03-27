@@ -18,6 +18,7 @@ skillshare sync                # Execute (auto-detects mode)
 skillshare sync --all          # Sync skills + extras
 skillshare sync --dry-run      # Preview
 skillshare sync --force        # Override conflicts
+skillshare sync --json         # JSON output
 skillshare sync -g             # Force global mode
 ```
 
@@ -33,7 +34,7 @@ Copy mode note:
 
 ## sync extras
 
-Sync non-skill resources (rules, commands, prompts) to arbitrary directories. **Global only.**
+Sync non-skill resources (rules, commands, prompts) to arbitrary directories. Supports both global and project mode.
 
 ```bash
 skillshare sync extras            # Sync all configured extras
@@ -51,7 +52,9 @@ extras:
         mode: copy
 ```
 
-Source: `~/.config/skillshare/<name>/`. Modes: `merge` (default, per-file symlinks), `copy`, `symlink`.
+Source: `~/.config/skillshare/extras/<name>/` (global) or `.skillshare/extras/<name>/` (project). Modes: `merge` (default, per-file symlinks), `copy`, `symlink`.
+
+For full extras management (`init`, `list`, `remove`, `collect`), see [extras.md](extras.md).
 
 ## collect
 
@@ -62,6 +65,7 @@ Import skills from target(s) to source.
 skillshare collect claude      # From specific target
 skillshare collect --all       # From all targets
 skillshare collect --dry-run   # Preview
+skillshare collect claude --json   # JSON output (implies --force)
 
 # Project (auto-detected or -p)
 skillshare collect claude     # From project target
